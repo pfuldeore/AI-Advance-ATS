@@ -42,8 +42,8 @@ def input_pdf_setup(uploaded_file):
 
 st.set_page_config(page_title="ATS Resume Expert 🔍")
 st.header("📃 Advance ATS Tracking System 🔍")
-input_text_role=st.text_input("Job Role: ",key="input")
-input_text_desc=st.text_area("Job Description: ",key="input")
+input_text_role=st.text_input("Job Role: ",key="input_role")
+input_text_desc=st.text_area("Job Description: ",key="input_desc")
 uploaded_file=st.file_uploader("Upload your resume(PDF)...",type=["pdf"])
 
 
