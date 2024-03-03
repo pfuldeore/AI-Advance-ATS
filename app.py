@@ -1,38 +1,25 @@
 from dotenv import load_dotenv
 
 load_dotenv()
-import base64
 import streamlit as st
 import os
-import io
-from PIL import Image 
-import pdf2image
+from PyPDF2 import PdfReader
 import google.generativeai as genai
 
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 def get_gemini_response(input,pdf_content,role,prompt):
-    model=genai.GenerativeModel('gemini-pro-vision')
-    response=model.generate_content([input,pdf_content[0],role,prompt])
+    model=genai.GenerativeModel('gemini-pro')
+    response=model.generate_content(f"{input}\nResume:{pdf_content}\nRole: {role}\n'Job description':{prompt}")
     return response.text
 
 def input_pdf_setup(uploaded_file):
     if uploaded_file is not None:
-        ## Convert the PDF to image
-        images=pdf2image.convert_from_bytes(uploaded_file.read())
-        first_page=images[0]
-        # Convert to bytes
-        img_byte_arr = io.BytesIO()
-        first_page.save(img_byte_arr, format='JPEG')
-        img_byte_arr = img_byte_arr.getvalue()
-
-        pdf_parts = [
-            {
-                "mime_type": "image/jpeg",
-                "data": base64.b64encode(img_byte_arr).decode()  # encode to base64
-            }
-        ]
-        return pdf_parts
+        reader = PdfReader(uploaded_file) 
+        data = ""
+        for i in range(len(reader.pages)):
+            data = data + " " + reader.pages[i].extract_text() 
+        return data
     else:
         raise FileNotFoundError("No file uploaded")
 
